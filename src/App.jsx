@@ -4,6 +4,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
+  const [todoText, setTodoText] = useState('');
   const [incompleteTodos, setIncompleteTodos] = useState([
     "TODOです1",
     "TODOです2"
@@ -12,10 +13,12 @@ function App() {
     "TODOでした1",
     "TODOでした2"
   ]);
+  const onChangeTodoText = (event) => setTodoText(event.target.value);
+  
   return (
     <>
       <div className='input-area'>
-        <input placeholder='TODOを入力してください' />
+        <input placeholder='TODOを入力してください' value={todoText} onChange={} />
         <button>追加</button>
       </div>
       <div className='incomplete-area'>

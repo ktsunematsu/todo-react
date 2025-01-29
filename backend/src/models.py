@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class TodoCreate(BaseModel):
@@ -9,9 +9,9 @@ class TodoCreate(BaseModel):
 
 
 class Todo(TodoCreate):
-    id: str = Field(alias="_id")
-    created_at: datetime = Field(default_factory=datetime.now)
-    updated_at: datetime = Field(default_factory=datetime.now)
+    id: int
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
-        populate_by_name = True
+        from_attributes = True

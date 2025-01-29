@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import Sequence
 
 from bson import ObjectId
 from database import collection
@@ -18,14 +18,14 @@ app.add_middleware(
 )
 
 
-@app.get("/api/todos", response_model=List[Todo])
-async def get_todos():
+@app.get("/api/todos", response_model=Sequence[Todo])
+async def get_todos() -> Sequence[Todo]:
     todos = await collection.find().to_list(1000)
     return [Todo(**todo) for todo in todos]
 
 
 @app.post("/api/todos", response_model=Todo)
-async def create_todo(todo: TodoCreate):
+async def create_todo(todo: TodoCreate) -> Todo:
     new_todo = todo.dict()
     new_todo["created_at"] = datetime.now()
     new_todo["updated_at"] = datetime.now()
@@ -35,7 +35,7 @@ async def create_todo(todo: TodoCreate):
 
 
 @app.put("/api/todos/{todo_id}", response_model=Todo)
-async def update_todo(todo_id: str, todo: TodoCreate):
+async def update_todo(todo_id: str, todo: TodoCreate) -> Todo:
     result = await collection.update_one(
         {"_id": ObjectId(todo_id)},
         {"$set": {"text": todo.text, "completed": todo.completed, "updated_at": datetime.now()}},
@@ -47,7 +47,7 @@ async def update_todo(todo_id: str, todo: TodoCreate):
 
 
 @app.delete("/api/todos/{todo_id}")
-async def delete_todo(todo_id: str):
+async def delete_todo(todo_id: str) -> dict[str, str]:
     result = await collection.delete_one({"_id": ObjectId(todo_id)})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Todo not found")

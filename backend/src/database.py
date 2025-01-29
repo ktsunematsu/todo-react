@@ -1,10 +1,30 @@
-import os
+from datetime import datetime
 
-from dotenv import load_dotenv
-from motor.motor_asyncio import AsyncIOMotorClient
+from databases import Database
+from sqlalchemy import Boolean, Column, DateTime, Integer, MetaData, String, Table, create_engine
 
-load_dotenv()
+# SQLiteデータベースのURL
+DATABASE_URL = "sqlite:///./todo.db"
 
-client = AsyncIOMotorClient(os.getenv("MONGODB_URI"))
-db = client.todo_app
-collection = db.todos
+# データベース接続
+database = Database(DATABASE_URL)
+
+# メタデータ
+metadata = MetaData()
+
+# TODOテーブル定義
+todos = Table(
+    "todos",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("text", String, nullable=False),
+    Column("completed", Boolean, default=False),
+    Column("created_at", DateTime, default=datetime.now),
+    Column("updated_at", DateTime, default=datetime.now, onupdate=datetime.now),
+)
+
+# データベースエンジン
+engine = create_engine(DATABASE_URL)
+
+# テーブル作成
+metadata.create_all(engine)

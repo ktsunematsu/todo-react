@@ -11,12 +11,20 @@ from src.models import Todo, TodoCreate  # srcディレクトリからの相対�
 
 
 async def init_db():
+    print("Checking database...")
+    # レコードの存在確認
+    query = todos.select()
+    existing_records = await database.fetch_all(query)
+
+    if existing_records:
+        print("Database already initialized.")
+        return
+
     print("Initializing database...")
     sql_file = os.path.join(os.path.dirname(__file__), "..", "migrations", "todo_init.sql")
     if os.path.exists(sql_file):
         with open(sql_file) as f:
             sql = f.read()
-            # SQLステートメントを分割して実行
             statements = [s.strip() for s in sql.split(";") if s.strip()]
             for statement in statements:
                 try:
@@ -63,7 +71,37 @@ async def get_todos() -> list[Todo]:
     """
     query = todos.select()
     records = await database.fetch_all(query)
-    return [Todo(**record) for record in records]
+    return [
+        Todo(
+            id=record["id"],
+            text=record["text"],
+            completed=record["completed"],
+            alert=record["alert"],
+            limit_date=record["limit_date"],
+            created_at=record["created_at"] or datetime.now(),
+            updated_at=record["updated_at"] or datetime.now(),
+        )
+        for record in records
+    ]
+
+
+@app.get("/api/todos/{todo_id}", response_model=Todo)
+async def get_todo_by_id(todo_id: int) -> Todo:
+    query = todos.select().where(todos.c.id == todo_id)
+    record = await database.fetch_one(query)
+
+    if not record:
+        raise HTTPException(status_code=404, detail="Todo not found")
+
+    return Todo(
+        id=record["id"],
+        text=record["text"],
+        completed=record["completed"],
+        alert=record["alert"],
+        limit_date=record["limit_date"],
+        created_at=record["created_at"] or datetime.now(),
+        updated_at=record["updated_at"] or datetime.now(),
+    )
 
 
 @app.post("/api/todos", response_model=Todo)

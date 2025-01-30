@@ -10,6 +10,8 @@ class TodoCreate(BaseModel):
 
 class Todo(TodoCreate):
     id: int
+    alert: bool
+    limit_date: datetime
     created_at: datetime
     updated_at: datetime
 

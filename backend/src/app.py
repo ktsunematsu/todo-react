@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 from src.database import database, todos  # srcディレクトリからの相対インポート
 from src.models import Todo, TodoCreate  # srcディレクトリからの相対インポート
 
@@ -130,30 +131,42 @@ async def create_todo(todo: TodoCreate) -> dict:
     return {**todo.dict(), "id": last_record_id}
 
 
+class TodoUpdate(BaseModel):
+    completed: bool | None = None
+    text: str | None = None
+    alert: bool | None = None
+    limit_date: datetime | None = None
+
+
 @app.put("/api/todos/{todo_id}", response_model=Todo)
-async def update_todo(todo_id: int, todo: TodoCreate) -> dict:
-    """
-    指定されたTODOアイテムを更新します。
-
-    Args:
-        todo_id (int): 更新するTODOアイテムのID
-        todo (TodoCreate): 更新するデータ
-
-    Returns:
-        Todo: 更新されたTODOアイテム
-
-    Raises:
-        HTTPException: TODOアイテムが見つからない場合やデータベースエラー時に発生
-    """
-    query = (
-        todos.update()
-        .where(todos.c.id == todo_id)
-        .values(text=todo.text, completed=todo.completed, updated_at=datetime.now())
-    )
-    result = await database.execute(query)
-    if not result:
+async def update_todo(todo_id: int, todo: TodoUpdate) -> Todo:
+    # 既存のレコードを取得
+    query = todos.select().where(todos.c.id == todo_id)
+    record = await database.fetch_one(query)
+    if not record:
         raise HTTPException(status_code=404, detail="Todo not found")
-    return {**todo.dict(), "id": todo_id}
+
+    # 更新するフィールドのみを含む辞書を作成
+    update_data = {k: v for k, v in todo.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now()
+
+    # レコードを更新
+    query = todos.update().where(todos.c.id == todo_id).values(**update_data)
+    await database.execute(query)
+
+    # 更新後のレコードを取得
+    query = todos.select().where(todos.c.id == todo_id)
+    record = await database.fetch_one(query)
+
+    return Todo(
+        id=record["id"],
+        text=record["text"],
+        completed=record["completed"],
+        alert=record["alert"],
+        limit_date=record["limit_date"],
+        created_at=record["created_at"] or datetime.now(),
+        updated_at=record["updated_at"] or datetime.now(),
+    )
 
 
 @app.delete("/api/todos/{todo_id}")

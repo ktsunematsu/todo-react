@@ -17,6 +17,13 @@ export interface TodoCreate {
   limit_date?: string;
 }
 
+interface TodoUpdate {
+  text?: string;
+  completed?: boolean;
+  alert?: boolean;
+  limit_date?: string;
+}
+
 export const getTodos = async (): Promise<Todo[]> => {
   try {
     console.log('Fetching todos...'); // リクエスト開始ログ
@@ -44,8 +51,8 @@ export const createTodo = async (todo: TodoCreate): Promise<Todo> => {
   return data;
 };
 
-export const updateTodo = async (id: number, todo: Partial<TodoCreate>): Promise<Todo> => {
-  const { data } = await axios.put(`http://localhost:8000/api/todos/${id}`, todo);
+export const updateTodo = async (id: number, updates: Partial<TodoUpdate>): Promise<Todo> => {
+  const { data } = await axios.put(`http://localhost:8000/api/todos/${id}`, updates);
   return data;
 };
 

@@ -146,3 +146,24 @@ button:hover {
 .button-common:hover {
   opacity: 0.9;
 }
+
+.create-todo-item {
+  opacity: 1;
+}
+
+.create-todo-item:hover {
+  opacity: 0.9;
+  background-color: #f8fafc;
+  border: 1px solid var(--primary-color);
+  transform: translateY(-1px);
+}
+
+.clickable-text {
+  color: blue;
+  cursor: pointer;
+  flex-grow: 1;
+}
+
+.clickable-text:hover {
+  color: #1e40af;
+}

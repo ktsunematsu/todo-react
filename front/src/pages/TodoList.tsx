@@ -33,13 +33,19 @@ export default function TodoList() {
   return (
     <div className="todo-list">
       <div className="header">
-        <h1>Todo一覧</h1>
-        <button onClick={() => navigate('/create')} className="create-button">
-          新規作成
-        </button>
+        <h1>マイタスク</h1>
       </div>
       
       <ul>
+        <li className="create-todo-item">
+          <input type="checkbox" checked={true} disabled />
+          <span 
+            className="clickable-text"
+            onClick={() => navigate('/create')}
+          >
+            タスクを追加
+          </span>
+        </li>
         {activeTodos.map((todo) => (
           <li key={todo.id}>
             <input

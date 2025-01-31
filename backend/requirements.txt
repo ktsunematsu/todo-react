@@ -1,9 +1,0 @@
-fastapi==0.104.1
-uvicorn==0.24.0
-motor==3.3.1
-python-dotenv==1.0.0
-pydantic==2.5.2
-pytest==7.0.0
-httpx==0.21.0
-databases==0.9.0
-sqlalchemy==2.0.37

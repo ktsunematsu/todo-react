@@ -25,7 +25,7 @@ dist-ssr
 
 # python
 *.pyc
-backend/venv
+back/venv/
 
 .env
 

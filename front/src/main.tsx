@@ -6,6 +6,7 @@ import TodoList from './pages/TodoList'
 import TodoDetail from './pages/TodoDetail'
 import TodoCreate from './pages/TodoCreate'
 import './index.css'
+import TodoEdit from './pages/TodoEdit'
 
 const queryClient = new QueryClient()
 
@@ -17,6 +18,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/" element={<TodoList />} />
           <Route path="/create" element={<TodoCreate />} />
           <Route path="/:id" element={<TodoDetail />} />
+          <Route path="/:id/edit" element={<TodoEdit />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

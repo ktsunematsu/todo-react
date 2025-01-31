@@ -36,7 +36,10 @@ function TodoDetail() {
         <p>作成日時: {formatDateTime(todo?.created_at)}</p>
         <p>更新日時: {formatDateTime(todo?.updated_at)}</p>
       </div>
-      <button onClick={() => navigate('/')}>戻る</button>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <button onClick={() => navigate('/')}>戻る</button>
+        <button onClick={() => navigate(`/${id}/edit`)}>編集</button>
+      </div>
     </div>
   )
 }

@@ -167,3 +167,13 @@ button:hover {
 .clickable-text:hover {
   color: #1e40af;
 }
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24;
+  color: #5f6368;
+  vertical-align: middle;
+}

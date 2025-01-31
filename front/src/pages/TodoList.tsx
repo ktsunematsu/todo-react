@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getTodos, updateTodo } from '../api/todos';
 
+// 期限切れチェック
+const isOverdue = (limitDate: string | null) => {
+  if (!limitDate) return false;
+  return new Date(limitDate) < new Date();
+};
+
 export default function TodoList() {
   const [showCompleted, setShowCompleted] = useState(false);
   const navigate = useNavigate();
@@ -58,8 +64,21 @@ export default function TodoList() {
                 })
               }
             />
-            <span>{todo.text}</span>
-            {todo.alert && <span role="img" aria-label="alert">⚠️</span>}
+            <span style={{ 
+              color: (!todo.completed && isOverdue(todo.limit_date)) ? 'red' : 'inherit' 
+            }}>
+              {todo.text}
+            </span>
+            {((!todo.completed && isOverdue(todo.limit_date))) && (
+              <span 
+                className="material-symbols-outlined" 
+                role="img" 
+                aria-label="alert"
+                style={{ color: isOverdue(todo.limit_date) ? 'red' : '#5f6368' }}
+              >
+                warning
+              </span>
+            )}
             <button onClick={() => navigate(`/${todo.id}`)}>
               詳細
             </button>
@@ -89,7 +108,7 @@ export default function TodoList() {
                   })}
                 />
                 <span>{todo.text}</span>
-                {todo.alert && <span role="img" aria-label="alert">⚠️</span>}
+                
                 <button onClick={() => navigate(`/${todo.id}`)}>詳細</button>
               </li>
             ))}
